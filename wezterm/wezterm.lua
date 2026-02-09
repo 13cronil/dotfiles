@@ -40,7 +40,7 @@ config.scrollback_lines = 5000
 config.window_padding = {
 	left = 10,
 	right = 10,
-	top = 10,
+	top = 30,
 	bottom = 10,
 }
 
@@ -48,4 +48,3 @@ config.window_padding = {
 config.harfbuzz_features = { "calt=1", "clig=1" }
 
 return config
-
