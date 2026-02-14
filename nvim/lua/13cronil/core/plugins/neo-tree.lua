@@ -16,6 +16,7 @@ return {
   opts = {
     filesystem = {
       window = {
+        hide_dotfiles = false,
         mappings = {
           ['\\'] = 'close_window',
         },
