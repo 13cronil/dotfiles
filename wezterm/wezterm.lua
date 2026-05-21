@@ -1,5 +1,6 @@
 local wezterm = require("wezterm")
 local config = {}
+local act = wezterm.action
 
 -- Detect platform
 local is_windows = wezterm.target_triple:find("windows-msvc")
@@ -25,8 +26,8 @@ end
 config.font = wezterm.font("JetBrains Mono")
 config.font_size = 12.0 -- Adjust to your preference (11-14 is typical)
 
--- Color Scheme
-config.color_scheme = "Catppuccin Mocha" -- or try 'Dracula', 'Tokyonight'
+-- Colour Scheme
+config.color_scheme = "duckbones" -- or try 'Dracula', 'Tokyonight'
 
 -- Window Styling
 config.window_decorations = "RESIZE" -- Removes title bar, keeps resize handles
@@ -46,5 +47,24 @@ config.window_padding = {
 
 -- Ligatures (JetBrains Mono supports these)
 config.harfbuzz_features = { "calt=1", "clig=1" }
+
+-- Leader key
+config.leader = { key = "a", mods = "CTRL", timeout_milliseconds = 1000 }
+
+config.keys = {
+	{ key = "a", mods = "LEADER|CTRL", action = act.SendKey({ key = "a", mods = "CTRL" }) },
+	{ key = "|", mods = "LEADER|SHIFT", action = act.SplitHorizontal({ domain = "CurrentPaneDomain" }) },
+	{ key = "-", mods = "LEADER", action = act.SplitVertical({ domain = "CurrentPaneDomain" }) },
+	{ key = "h", mods = "LEADER", action = act.ActivatePaneDirection("Left") },
+	{ key = "j", mods = "LEADER", action = act.ActivatePaneDirection("Down") },
+	{ key = "k", mods = "LEADER", action = act.ActivatePaneDirection("Up") },
+	{ key = "l", mods = "LEADER", action = act.ActivatePaneDirection("Right") },
+	{ key = "z", mods = "LEADER", action = act.TogglePaneZoomState },
+	{ key = "x", mods = "LEADER", action = act.CloseCurrentPane({ confirm = true }) },
+	{ key = "c", mods = "LEADER", action = act.SpawnTab("CurrentPaneDomain") },
+	{ key = "n", mods = "LEADER", action = act.ActivateTabRelative(1) },
+	{ key = "p", mods = "LEADER", action = act.ActivateTabRelative(-1) },
+	{ key = "[", mods = "LEADER", action = act.ActivateCopyMode },
+}
 
 return config
