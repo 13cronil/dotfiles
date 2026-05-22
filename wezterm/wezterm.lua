@@ -27,7 +27,7 @@ config.font = wezterm.font("JetBrains Mono")
 config.font_size = 12.0 -- Adjust to your preference (11-14 is typical)
 
 -- Colour Scheme
-config.color_scheme = "duckbones" -- or try 'Dracula', 'Tokyonight'
+config.color_scheme = "GruvboxDarkHard"
 
 -- Window Styling
 config.window_decorations = "RESIZE" -- Removes title bar, keeps resize handles
