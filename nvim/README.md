@@ -82,8 +82,7 @@ lua/custom/health.lua          Health check. Run `:checkhealth custom`.
 | Key | Action |
 | --- | --- |
 | `]c` / `[c` | Next / previous change |
-| `<leader>hs` | Stage hunk |
-| `<leader>hu` | Undo stage hunk |
+| `<leader>hs` | Stage or unstage hunk |
 | `<leader>hr` | Reset hunk |
 | `<leader>hS` | Stage buffer |
 | `<leader>hR` | Reset buffer |
