@@ -3,6 +3,7 @@ set -euo pipefail
 
 root="$(cd "$(dirname "$0")" && pwd)"
 config="${XDG_CONFIG_HOME:-$HOME/.config}"
+starship="${STARSHIP_CONFIG:-$HOME/.config/starship.toml}"
 
 link() {
   local target="$1" dest="$2"
@@ -16,4 +17,4 @@ link() {
 
 link "$root/nvim" "$config/nvim"
 link "$root/wezterm" "$config/wezterm"
-link "$root/starship.toml" "$config/starship.toml"
+link "$root/starship.toml" "$starship"
