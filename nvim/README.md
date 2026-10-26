@@ -1,322 +1,154 @@
-# kickstart.nvim
+# Neovim config
 
-## Introduction
+Neovim configuration. Plugin manager: lazy.nvim. Leader key: `Space`.
 
-A starting point for Neovim that is:
+## Requirements
 
-* Small
-* Single-file
-* Completely Documented
+| Item | Used for |
+| --- | --- |
+| Neovim 0.11 or later | Everything |
+| git, make, unzip | Plugin install, fzf build |
+| ripgrep (`rg`) | Telescope grep |
+| fd | Telescope file search |
+| cargo | Build of blink.cmp |
+| Nerd Font | Icons (`vim.g.have_nerd_font = true`) |
 
-**NOT** a Neovim distribution, but instead a starting point for your configuration.
+Mason installs: `lua-language-server`, `stylua`, `ty`, `ruff`.
 
-## Installation
+## Install
 
-### Install Neovim
+1. Clone this repo.
+2. Link the `nvim` directory:
+   `ln -s /path/to/dotfiles/nvim ~/.config/nvim`
+3. Start `nvim`.
+4. Wait. Lazy installs plugins. Mason installs tools.
+5. Run `:checkhealth` and `:checkhealth custom`.
+6. Fix every warning for tools you use.
 
-Kickstart.nvim targets *only* the latest
-['stable'](https://github.com/neovim/neovim/releases/tag/stable) and latest
-['nightly'](https://github.com/neovim/neovim/releases/tag/nightly) of Neovim.
-If you are experiencing issues, please make sure you have at least the latest
-stable version. Most likely, you want to install neovim via a [package
-manager](https://github.com/neovim/neovim/blob/master/INSTALL.md#install-from-package).
-To check your neovim version, run `nvim --version` and make sure it is not
-below the latest
-['stable'](https://github.com/neovim/neovim/releases/tag/stable) version. If
-your chosen install method only gives you an outdated version of neovim, find
-alternative [installation methods below](#alternative-neovim-installation-methods).
+WARNING: Move any existing `~/.config/nvim` first. The link fails if it exists.
 
-### Install External Dependencies
+## Layout
 
-External Requirements:
-- Basic utils: `git`, `make`, `unzip`, C Compiler (`gcc`)
-- [ripgrep](https://github.com/BurntSushi/ripgrep#installation),
-  [fd-find](https://github.com/sharkdp/fd#installation)
-- Clipboard tool (xclip/xsel/win32yank or other depending on the platform)
-- A [Nerd Font](https://www.nerdfonts.com/): optional, provides various icons
-  - if you have it set `vim.g.have_nerd_font` in `init.lua` to true
-- Emoji fonts (Ubuntu only, and only if you want emoji!) `sudo apt install fonts-noto-color-emoji`
-- Language Setup:
-  - If you want to write Typescript, you need `npm`
-  - If you want to write Golang, you will need `go`
-  - etc.
-
-> [!NOTE]
-> See [Install Recipes](#Install-Recipes) for additional Windows and Linux specific notes
-> and quick install snippets
-
-### Install Kickstart
-
-> [!NOTE]
-> [Backup](#FAQ) your previous configuration (if any exists)
-
-Neovim's configurations are located under the following paths, depending on your OS:
-
-| OS | PATH |
-| :- | :--- |
-| Linux, MacOS | `$XDG_CONFIG_HOME/nvim`, `~/.config/nvim` |
-| Windows (cmd)| `%localappdata%\nvim\` |
-| Windows (powershell)| `$env:LOCALAPPDATA\nvim\` |
-
-#### Recommended Step
-
-[Fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) this repo
-so that you have your own copy that you can modify, then install by cloning the
-fork to your machine using one of the commands below, depending on your OS.
-
-> [!NOTE]
-> Your fork's URL will be something like this:
-> `https://github.com/<your_github_username>/kickstart.nvim.git`
-
-You likely want to remove `lazy-lock.json` from your fork's `.gitignore` file
-too - it's ignored in the kickstart repo to make maintenance easier, but it's
-[recommended to track it in version control](https://lazy.folke.io/usage/lockfile).
-
-#### Clone kickstart.nvim
-
-> [!NOTE]
-> If following the recommended step above (i.e., forking the repo), replace
-> `nvim-lua` with `<your_github_username>` in the commands below
-
-<details><summary> Linux and Mac </summary>
-
-```sh
-git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
+```text
+init.lua                       Entry point. Loads the modules below.
+lua/13cronil/core/options.lua  Editor options.
+lua/13cronil/core/keymaps.lua  Global keymaps and diagnostics.
+lua/13cronil/core/autocmds.lua Autocommands.
+lua/13cronil/lazy.lua          Bootstrap, main plugins, LSP.
+lua/13cronil/core/plugins/     One file per extra plugin. Auto-loaded.
+lua/13cronil/ui/               UI setup.
+lua/custom/health.lua          Health check. Run `:checkhealth custom`.
+.stylua.toml                   Lua formatter settings.
 ```
 
-</details>
+## Keymaps
 
-<details><summary> Windows </summary>
+### Search (Telescope)
 
-If you're using `cmd.exe`:
+| Key | Action |
+| --- | --- |
+| `<leader>sf` | Files |
+| `<leader>sg` | Grep |
+| `<leader>sw` | Word under cursor |
+| `<leader>s/` | Grep in open files |
+| `<leader>/` | Search current buffer |
+| `<leader><leader>` | Buffers |
+| `<leader>s.` | Recent files |
+| `<leader>sr` | Resume last search |
+| `<leader>sd` | Diagnostics |
+| `<leader>sh` | Help |
+| `<leader>sk` | Keymaps |
+| `<leader>sc` | Commands |
+| `<leader>ss` | Telescope pickers |
+| `<leader>sn` | Neovim config files |
 
-```
-git clone https://github.com/nvim-lua/kickstart.nvim.git "%localappdata%\nvim"
-```
+### LSP (active when a server is attached)
 
-If you're using `powershell.exe`
+| Key | Action |
+| --- | --- |
+| `grn` | Rename |
+| `gra` | Code action |
+| `grr` | References |
+| `gri` | Implementation |
+| `grd` | Definition |
+| `grD` | Declaration |
+| `grt` | Type definition |
+| `gO` | Document symbols |
+| `gW` | Workspace symbols |
+| `<leader>th` | Toggle inlay hints |
 
-```
-git clone https://github.com/nvim-lua/kickstart.nvim.git "${env:LOCALAPPDATA}\nvim"
-```
+### Git (gitsigns)
 
-</details>
+| Key | Action |
+| --- | --- |
+| `]c` / `[c` | Next / previous change |
+| `<leader>hs` | Stage hunk |
+| `<leader>hu` | Undo stage hunk |
+| `<leader>hr` | Reset hunk |
+| `<leader>hS` | Stage buffer |
+| `<leader>hR` | Reset buffer |
+| `<leader>hp` | Preview hunk |
+| `<leader>hb` | Blame line |
+| `<leader>hd` | Diff against index |
+| `<leader>hD` | Diff against last commit |
+| `<leader>tb` | Toggle line blame |
+| `<leader>tD` | Show deleted lines |
 
-### Post Installation
+### Debug (DAP)
 
-Start Neovim
+| Key | Action |
+| --- | --- |
+| `F5` | Start / continue |
+| `F1` | Step into |
+| `F2` | Step over |
+| `F3` | Step out |
+| `<leader>b` | Toggle breakpoint |
+| `<leader>B` | Conditional breakpoint |
+| `F7` | Toggle debug UI |
 
-```sh
-nvim
-```
+### Other
 
-That's it! Lazy will install all the plugins you have. Use `:Lazy` to view
-the current plugin status. Hit `q` to close the window.
+| Key | Action |
+| --- | --- |
+| `-` | Open parent directory (Oil) |
+| `<leader>--` | Oil in floating window |
+| `<leader>u` | Undo tree |
+| `<leader>f` | Format buffer |
+| `<leader>q` | Diagnostics to location list |
+| `<leader>y` / `<leader>Y` | Yank to system clipboard |
+| `<C-h/j/k/l>` | Move between windows |
+| `<C-S-h/j/k/l>` | Move window |
+| `J` / `K` (visual) | Move selected lines down / up |
+| `<Esc>` | Clear search highlight |
+| `<Esc><Esc>` (terminal) | Leave terminal mode |
 
-#### Read The Friendly Documentation
+Arrow keys in normal mode are disabled.
 
-Read through the `init.lua` file in your configuration folder for more
-information about extending and exploring Neovim. That also includes
-examples of adding popularly requested plugins.
+## Procedures
 
-> [!NOTE]
-> For more information about a particular plugin check its repository's documentation.
+### Add a plugin
 
+1. Create `lua/13cronil/core/plugins/<name>.lua`.
+2. Return a lazy.nvim spec from the file.
+3. Restart `nvim`.
 
-### Getting Started
+### Add a language server
 
-[The Only Video You Need to Get Started with Neovim](https://youtu.be/m8C0Cq9Uv9o)
+1. Add the server to `servers` in `lua/13cronil/lazy.lua`.
+2. Add the Mason package name to `ensure_installed` in the same file.
+3. Restart `nvim`.
 
-### FAQ
+### Format Lua code
 
-* What should I do if I already have a pre-existing Neovim configuration?
-  * You should back it up and then delete all associated files.
-  * This includes your existing init.lua and the Neovim files in `~/.local`
-    which can be deleted with `rm -rf ~/.local/share/nvim/`
-* Can I keep my existing configuration in parallel to kickstart?
-  * Yes! You can use [NVIM_APPNAME](https://neovim.io/doc/user/starting.html#%24NVIM_APPNAME)`=nvim-NAME`
-    to maintain multiple configurations. For example, you can install the kickstart
-    configuration in `~/.config/nvim-kickstart` and create an alias:
-    ```
-    alias nvim-kickstart='NVIM_APPNAME="nvim-kickstart" nvim'
-    ```
-    When you run Neovim using `nvim-kickstart` alias it will use the alternative
-    config directory and the matching local directory
-    `~/.local/share/nvim-kickstart`. You can apply this approach to any Neovim
-    distribution that you would like to try out.
-* What if I want to "uninstall" this configuration:
-  * See [lazy.nvim uninstall](https://lazy.folke.io/usage#-uninstalling) information
-* Why is the kickstart `init.lua` a single file? Wouldn't it make sense to split it into multiple files?
-  * The main purpose of kickstart is to serve as a teaching tool and a reference
-    configuration that someone can easily use to `git clone` as a basis for their own.
-    As you progress in learning Neovim and Lua, you might consider splitting `init.lua`
-    into smaller parts. A fork of kickstart that does this while maintaining the
-    same functionality is available here:
-    * [kickstart-modular.nvim](https://github.com/dam9000/kickstart-modular.nvim)
-  * Discussions on this topic can be found here:
-    * [Restructure the configuration](https://github.com/nvim-lua/kickstart.nvim/issues/218)
-    * [Reorganize init.lua into a multi-file setup](https://github.com/nvim-lua/kickstart.nvim/pull/473)
+Run `stylua .` in the `nvim` directory.
 
-### Install Recipes
+## Fault finding
 
-Below you can find OS specific install instructions for Neovim and dependencies.
-
-After installing all the dependencies continue with the [Install Kickstart](#install-kickstart) step.
-
-#### Windows Installation
-
-<details><summary>Windows with Microsoft C++ Build Tools and CMake</summary>
-Installation may require installing build tools and updating the run command for `telescope-fzf-native`
-
-See `telescope-fzf-native` documentation for [more details](https://github.com/nvim-telescope/telescope-fzf-native.nvim#installation)
-
-This requires:
-
-- Install CMake and the Microsoft C++ Build Tools on Windows
-
-```lua
-{'nvim-telescope/telescope-fzf-native.nvim', build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build' }
-```
-</details>
-<details><summary>Windows with gcc/make using chocolatey</summary>
-Alternatively, one can install gcc and make which don't require changing the config,
-the easiest way is to use choco:
-
-1. install [chocolatey](https://chocolatey.org/install)
-either follow the instructions on the page or use winget,
-run in cmd as **admin**:
-```
-winget install --accept-source-agreements chocolatey.chocolatey
-```
-
-2. install all requirements using choco, exit the previous cmd and
-open a new one so that choco path is set, and run in cmd as **admin**:
-```
-choco install -y neovim git ripgrep wget fd unzip gzip mingw make
-```
-</details>
-<details><summary>WSL (Windows Subsystem for Linux)</summary>
-
-```
-wsl --install
-wsl
-sudo add-apt-repository ppa:neovim-ppa/unstable -y
-sudo apt update
-sudo apt install make gcc ripgrep unzip git xclip neovim
-```
-</details>
-
-#### Linux Install
-<details><summary>Ubuntu Install Steps</summary>
-
-```
-sudo add-apt-repository ppa:neovim-ppa/unstable -y
-sudo apt update
-sudo apt install make gcc ripgrep unzip git xclip neovim
-```
-</details>
-<details><summary>Debian Install Steps</summary>
-
-```
-sudo apt update
-sudo apt install make gcc ripgrep unzip git xclip curl
-
-# Now we install nvim
-curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
-sudo rm -rf /opt/nvim-linux-x86_64
-sudo mkdir -p /opt/nvim-linux-x86_64
-sudo chmod a+rX /opt/nvim-linux-x86_64
-sudo tar -C /opt -xzf nvim-linux-x86_64.tar.gz
-
-# make it available in /usr/local/bin, distro installs to /usr/bin
-sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/
-```
-</details>
-<details><summary>Fedora Install Steps</summary>
-
-```
-sudo dnf install -y gcc make git ripgrep fd-find unzip neovim
-```
-</details>
-
-<details><summary>Arch Install Steps</summary>
-
-```
-sudo pacman -S --noconfirm --needed gcc make git ripgrep fd unzip neovim
-```
-</details>
-
-### Alternative neovim installation methods
-
-For some systems it is not unexpected that the [package manager installation
-method](https://github.com/neovim/neovim/blob/master/INSTALL.md#install-from-package)
-recommended by neovim is significantly behind. If that is the case for you,
-pick one of the following methods that are known to deliver fresh neovim versions very quickly.
-They have been picked for their popularity and because they make installing and updating
-neovim to the latest versions easy. You can also find more detail about the
-available methods being discussed
-[here](https://github.com/nvim-lua/kickstart.nvim/issues/1583).
-
-
-<details><summary>Bob</summary>
-
-[Bob](https://github.com/MordechaiHadad/bob) is a Neovim version manager for
-all plattforms. Simply install
-[rustup](https://rust-lang.github.io/rustup/installation/other.html),
-and run the following commands:
-
-```bash
-rustup default stable
-rustup update stable
-cargo install bob-nvim
-bob use stable
-```
-
-</details>
-
-<details><summary>Homebrew</summary>
-
-[Homebrew](https://brew.sh) is a package manager popular on Mac and Linux.
-Simply install using [`brew install`](https://formulae.brew.sh/formula/neovim).
-
-</details>
-
-<details><summary>Flatpak</summary>
-
-Flatpak is a package manager for applications that allows developers to package their applications
-just once to make it available on all Linux systems. Simply [install flatpak](https://flatpak.org/setup/)
-and setup [flathub](https://flathub.org/setup) to [install neovim](https://flathub.org/apps/io.neovim.nvim).
-
-</details>
-
-<details><summary>asdf and mise-en-place</summary>
-
-[asdf](https://asdf-vm.com/) and [mise](https://mise.jdx.dev/) are tool version managers,
-mostly aimed towards project-specific tool versioning. However both support managing tools
-globally in the user-space as well:
-
-<details><summary>mise</summary>
-
-[Install mise](https://mise.jdx.dev/getting-started.html), then run:
-
-```bash
-mise plugins install neovim
-mise use neovim@stable
-```
-
-</details>
-
-<details><summary>asdf</summary>
-
-[Install asdf](https://asdf-vm.com/guide/getting-started.html), then run:
-
-```bash
-asdf plugin add neovim
-asdf install neovim stable
-asdf set neovim stable --home
-asdf reshim neovim
-```
-
-</details>
-
-</details>
+| Symptom | Action |
+| --- | --- |
+| Plugin broken after update | `:Lazy restore` |
+| Tool missing | `:Mason` |
+| blink.cmp build fails | Install cargo. Run `:Lazy build blink.cmp`. |
+| Icons show as boxes | Install a Nerd Font. Set it in the terminal. |
+| Telescope grep finds nothing | Install ripgrep. |
+| Unknown cause | `:checkhealth` |
